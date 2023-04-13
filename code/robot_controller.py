@@ -97,17 +97,33 @@ class CommandExecuterModule(ALModule):
         memory = ALProxy("ALMemory")
 
         # Set a starting position for the robot here if desired
-        # self.posture.goToPosture("Crouch", 1.0)
-        # time.sleep(3)
+        self.back_to_init()
+        time.sleep(3)
 
         # ROS Pubs n subs:
-        # self.pub_stimulus = rospy.Publisher('stimulus', String, queue_size=0)
-        # self.pub_logger = rospy.Publisher('logger', String, queue_size=0)
-        # self.pub_result = rospy.Publisher('results', String, queue_size=0)
+        self.sub_keypress = rospy.Subscriber('armod_command', String, self.ros_event_callback)
+        rospy.init_node('armod_controll', anonymous=True)
 
         # self.sub_keypress = rospy.Subscriber('keypress', String, self.keypressCb)
         # rospy.init_node('nao_cueing', anonymous=True)
-
+    def ros_event_callback(self, data):
+        if data.data == "point":
+            print("Let NAO point somewhere ...")
+            self.updateCoordinates(2, 1, 3)
+            self.onCallPoint()
+            time.sleep(3)
+            self.back_to_init()
+        elif data.data == "look":
+            print("Let NAO look somewhere ...")
+            self.updateCoordinates(2, 1, 3)
+            self.onCallLook()
+            time.sleep(3)
+            self.back_to_init()
+        elif data.data == "quit":
+            self.exit_flag = True
+        else:
+            print(data.data)            
+ 
     def wait_for_detection_or_intervall(self):
         """
             This function will process the given timestamp of when NAO turned the head.
@@ -310,6 +326,8 @@ class ArmodIntegrationClass():
 
     def __init__(self, naoip, naoport):
 
+        global config
+
         # Name must match variable name
         self.myBroker = ALBroker("myBroker",
         "0.0.0.0",
@@ -318,8 +336,9 @@ class ArmodIntegrationClass():
         naoport)
 
         self.CommandExecuter = CommandExecuterModule("CommandExecuter")
+        self.DEBUG = int(config['Experiment']['Debug'])
 
-        global config
+
         rp = {}
         x = float(config['Experiment']['X'])
         y = float(config['Experiment']['Y'])
@@ -341,24 +360,27 @@ if __name__ == '__main__':
 
     e = ArmodIntegrationClass(NAO_IP, NAO_PORT)
 
-    print("Lets bring NAO to inital seating position")
-    e.CommandExecuter.back_to_init()
+    if e.DEBUG:
+        print("NAO will look somewhere ...")
+        e.CommandExecuter.updateCoordinates(2, 1, 3)
+        e.CommandExecuter.onCallLook()
+        time.sleep(3)
+        print("Bring NAO back to resting position ...")
+        e.nao_rest()
 
-    print("NAO will look somewhere ...")
-    e.CommandExecuter.updateCoordinates(2, 1, 3)
-    e.CommandExecuter.onCallLook()
-    time.sleep(3)
-    print("Bring NAO back to resting position ...")
-    e.nao_rest()
+        print("Let NAO point somewhere ...")
+        e.CommandExecuter.updateCoordinates(2, 1, 3)
+        e.CommandExecuter.onCallPoint()
+        time.sleep(3)
+        e.CommandExecuter.back_to_init()
 
-    print("Let NAO point somewhere ...")
-    e.CommandExecuter.updateCoordinates(2, 1, 3)
-    e.CommandExecuter.onCallPoint()
-    time.sleep(3)
-    e.CommandExecuter.back_to_init()
+        print("Let NAO say something ...")
+        e.CommandExecuter.onCallSay("Hello there!")
 
-    print("Let NAO say something ...")
-    e.CommandExecuter.onCallSay("Hello there!")
+    while not e.CommandExecuter.exit_flag:
+        #print("Testing ROS ...")
+        #time.sleep(1)
+        pass
 
     e.myBroker.shutdown()
     sys.exit(0)
