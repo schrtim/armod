@@ -55,6 +55,9 @@ class CommandExecuterModule(ALModule):
         # Set Frame to 0 as its the stable torso frame of NAO
         self.frame = 0 #0 - TORSO, 1 - World, 2- Robot
 
+        # Define default Arm for the pointing gestures
+        self.effector = "LArm"
+
         # Intializie Coordinates with resting position
         self.x = float(config['Experiment']['X'])
         self.y = float(config['Experiment']['Y'])
@@ -134,7 +137,146 @@ class CommandExecuterModule(ALModule):
             self.tracker.lookAt([self.x, self.y, self.z], self.frame, self.maxSpeed, self.useWholeBody)
         except Exception as excpt:
             print(excpt)
-                    
+
+    def onCallPoint(self):
+
+    # TODO add decision mechanic for arm to point with
+        try:
+            self.tracker.pointAt(self.effector, [self.x, self.y, self.z], self.frame, self.maxSpeed)
+        except Exception as excpt:
+            print(excpt)       
+
+    def onCallSay(self, text):
+        try:
+            self.tts.say(text)
+        except Exception as excpt:
+            print(excpt)     
+
+    def back_to_init(self):
+        """Code Snippet from Choregraphe
+            Lets NAO move back to its original posture
+            This posture can easily be defined using choregraphs timeline box
+            A defined posture there can be exported as bezier style python code
+        """
+        # Go back to initial Pose, to prevent unwanted behavior
+        # Choregraphe bezier export in Python.
+
+        names = list()
+        times = list()
+        keys = list()
+
+        names.append("HeadPitch")
+        times.append([1.2])
+        keys.append([[-0.0153821, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("HeadYaw")
+        times.append([1.2])
+        keys.append([[-0.021518, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LAnklePitch")
+        times.append([1.2])
+        keys.append([[0.667248, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LAnkleRoll")
+        times.append([1.2])
+        keys.append([[0.0767419, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LElbowRoll")
+        times.append([1.2])
+        keys.append([[-1.20568, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LElbowYaw")
+        times.append([1.2])
+        keys.append([[-0.490922, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LHand")
+        times.append([1.2])
+        keys.append([[0.0104001, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LHipPitch")
+        times.append([1.2])
+        keys.append([[-1.26551, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LHipRoll")
+        times.append([1.2])
+        keys.append([[0.34826, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LHipYawPitch")
+        times.append([1.2])
+        keys.append([[-0.638102, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LKneePitch")
+        times.append([1.2])
+        keys.append([[1.50021, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LShoulderPitch")
+        times.append([1.2])
+        keys.append([[0.918824, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LShoulderRoll")
+        times.append([1.2])
+        keys.append([[0.28835, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("LWristYaw")
+        times.append([1.2])
+        keys.append([[0.0429101, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RAnklePitch")
+        times.append([1.2])
+        keys.append([[0.673468, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RAnkleRoll")
+        times.append([1.2])
+        keys.append([[-0.0214341, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RElbowRoll")
+        times.append([1.2])
+        keys.append([[1.29934, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RElbowYaw")
+        times.append([1.2])
+        keys.append([[0.454022, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RHand")
+        times.append([1.2])
+        keys.append([[0.0388, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RHipPitch")
+        times.append([1.2])
+        keys.append([[-1.21804, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RHipRoll")
+        times.append([1.2])
+        keys.append([[-0.315962, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RHipYawPitch")
+        times.append([1.2])
+        keys.append([[-0.638102, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RKneePitch")
+        times.append([1.2])
+        keys.append([[1.47422, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RShoulderPitch")
+        times.append([1.2])
+        keys.append([[0.91584, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RShoulderRoll")
+        times.append([1.2])
+        keys.append([[-0.339056, [3, -0.4, 0], [3, 0, 0]]])
+
+        names.append("RWristYaw")
+        times.append([1.2])
+        keys.append([[-0.044528, [3, -0.4, 0], [3, 0, 0]]])
+
+        try:
+          # uncomment the following line and modify the IP if you use this script outside Choregraphe.
+          # motion = ALProxy("ALMotion", IP, 9559)
+          motion = ALProxy("ALMotion")
+          motion.angleInterpolationBezier(names, times, keys)
+        except BaseException as err:
+          print(err)
+
     def flash_eyes(self, color=None):
 
         sGroup = "FaceLeds"
@@ -199,11 +341,24 @@ if __name__ == '__main__':
 
     e = ArmodIntegrationClass(NAO_IP, NAO_PORT)
 
+    print("Lets bring NAO to inital seating position")
+    e.CommandExecuter.back_to_init()
+
     print("NAO will look somewhere ...")
     e.CommandExecuter.updateCoordinates(2, 1, 3)
     e.CommandExecuter.onCallLook()
     time.sleep(3)
     print("Bring NAO back to resting position ...")
     e.nao_rest()
+
+    print("Let NAO point somewhere ...")
+    e.CommandExecuter.updateCoordinates(2, 1, 3)
+    e.CommandExecuter.onCallPoint()
+    time.sleep(3)
+    e.CommandExecuter.back_to_init()
+
+    print("Let NAO say something ...")
+    e.CommandExecuter.onCallSay("Hello there!")
+
     e.myBroker.shutdown()
     sys.exit(0)
