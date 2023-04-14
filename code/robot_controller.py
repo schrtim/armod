@@ -107,19 +107,29 @@ class CommandExecuterModule(ALModule):
         # self.sub_keypress = rospy.Subscriber('keypress', String, self.keypressCb)
         # rospy.init_node('nao_cueing', anonymous=True)
     def ros_event_callback(self, data):
-        if data.data == "point":
+        split = data.data.split(",")
+        print(split)
+        command = [split[0]]
+        x = -1*float(split[1]) # X-RealSense
+        y = -1*float(split[2]) # Y-RealSense
+        z = float(split[3])    # Z-RealSense
+
+        print(x,y,z)
+        print(command[0])
+
+        if command[0] == "point":
             print("Let NAO point somewhere ...")
-            self.updateCoordinates(2, 1, 3)
+            self.updateCoordinates(x, y, z)
             self.onCallPoint()
-            time.sleep(3)
+            time.sleep(5)
             self.back_to_init()
-        elif data.data == "look":
+        elif command[0] == "look":
             print("Let NAO look somewhere ...")
-            self.updateCoordinates(2, 1, 3)
+            self.updateCoordinates(x, y, z)
             self.onCallLook()
-            time.sleep(3)
+            time.sleep(5)
             self.back_to_init()
-        elif data.data == "quit":
+        elif command[0] == "quit":
             self.exit_flag = True
         else:
             print(data.data)            
@@ -377,10 +387,11 @@ if __name__ == '__main__':
         print("Let NAO say something ...")
         e.CommandExecuter.onCallSay("Hello there!")
 
-    while not e.CommandExecuter.exit_flag:
-        #print("Testing ROS ...")
-        #time.sleep(1)
-        pass
-
-    e.myBroker.shutdown()
-    sys.exit(0)
+    try:
+        while not e.CommandExecuter.exit_flag:
+            #print("Testing ROS ...")
+            #time.sleep(1)
+            pass
+    finally:
+        e.myBroker.shutdown()
+        sys.exit(0)
