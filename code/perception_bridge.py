@@ -31,6 +31,8 @@ class ArmodCommand:
             elif key == 'q':
                 self.send_command("quit,"+str(0)+","+str(0)+","+str(0))
                 break
+            elif key == 'n':
+                self.send_command("nod,"+str(self.pd[0])+","+str(self.pd[1])+","+str(self.pd[2]))
             else:
                 self.send_command(key)
 

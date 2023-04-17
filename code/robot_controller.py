@@ -97,8 +97,17 @@ class CommandExecuterModule(ALModule):
         memory = ALProxy("ALMemory")
 
         # Set a starting position for the robot here if desired
-        self.back_to_init()
-        time.sleep(3)
+
+        # self.posture.goToPosture("Crouch", 0.8)
+
+        # self.al = ALProxy("ALAutonomousLife")
+        # self.al.setState("disabled")
+        # self.somnus = ALProxy("ALMotion")
+        # self.somnus.wakeUp()
+
+        self.posture.goToPosture("Sit", 0.8)
+        #time.sleep(3)
+
 
         # ROS Pubs n subs:
         self.sub_keypress = rospy.Subscriber('armod_command', String, self.ros_event_callback)
@@ -106,31 +115,43 @@ class CommandExecuterModule(ALModule):
 
         # self.sub_keypress = rospy.Subscriber('keypress', String, self.keypressCb)
         # rospy.init_node('nao_cueing', anonymous=True)
+    def command_split(self, cmd):
+        split = cmd.split(",")
+        if len(split)>1:
+            command = split[0]
+            x = -1*float(split[1]) # X-RealSense
+            y = -1*float(split[2]) # Y-RealSense
+            z = float(split[3])    # Z-RealSense
+            return command, x, y, z
+        else: return split[0], 0, 0, 0
+    
     def ros_event_callback(self, data):
-        split = data.data.split(",")
-        print(split)
-        command = [split[0]]
-        x = -1*float(split[1]) # X-RealSense
-        y = -1*float(split[2]) # Y-RealSense
-        z = float(split[3])    # Z-RealSense
 
-        print(x,y,z)
-        print(command[0])
+        command, x, y, z = self.command_split(data.data)
 
-        if command[0] == "point":
+        if command == "point":
             print("Let NAO point somewhere ...")
             self.updateCoordinates(x, y, z)
             self.onCallPoint()
-            time.sleep(5)
-            self.back_to_init()
-        elif command[0] == "look":
+            print(x,y,z)
+            time.sleep(3)
+            self.posture.applyPosture("Sit", 0.6)
+        elif command == "look":
             print("Let NAO look somewhere ...")
-            self.updateCoordinates(x, y, z)
+            self.updateCoordinates(x, -y, z)
             self.onCallLook()
+            print(x,y,z)
             time.sleep(5)
-            self.back_to_init()
-        elif command[0] == "quit":
+            self.posture.applyPosture("Sit", 0.6)
+        elif command == "quit":
             self.exit_flag = True
+        elif command == "nod":
+            self.updateCoordinates(x, -y, z)
+            self.onCallLook()
+            # self.flash_eyes("green")
+            self.onAffirmNod()
+            time.sleep(3)
+            self.posture.applyPosture("Sit", 0.6)
         else:
             print(data.data)            
  
@@ -323,13 +344,27 @@ class CommandExecuterModule(ALModule):
         self.leds.wait(id, 0)
         self.ids.remove(id)
 
-    def set_eyes(self, state=True):
+    def onAffirmNod(self):
+        """Lets NAO nod his head - Exported from Choregraphe"""
+        # Choregraphe simplified export in Python.
+        names = list()
+        times = list()
+        keys = list()
 
-        sGroup = "FaceLeds"
-        if state:
-            self.led_controller.on(sGroup)
-        else:
-            self.led_controller.off(sGroup)
+        names.append("HeadPitch")
+        times.append([0.52, 0.66, 0.8, 0.94, 1.08, 1.22, 1.36, 1.48])
+        keys.append([-0.413643, -0.0610865, 0.29147, 0.115192, -0.413643, -0.0610865, 0.29147, -0.15708])
+
+        # names.append("HeadYaw")
+        # times.append([0.52, 0.8, 1.08, 1.28, 1.48])
+        # keys.append([0, 0, 0, 0, 0])
+
+        try:
+            self.tts.say("Hello there!")
+            motion = ALProxy("ALMotion")
+            motion.angleInterpolation(names, keys, times, True)
+        except BaseException as err:
+            print(err)
 
 # Main Function for NaoPosner Experiment
 class ArmodIntegrationClass():
