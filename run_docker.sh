@@ -30,5 +30,5 @@ docker run \
     -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) \
     -e DISPLAY=$DISPLAY \
     --name $CONTAINER_NAME \
-    $DOCKER_NAME python /home/user/code/add_armod_tf.py                  
+    $DOCKER_NAME bash /home/user/code/start_up.sh                 
 
