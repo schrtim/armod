@@ -29,7 +29,6 @@ docker run \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) \
     -e DISPLAY=$DISPLAY \
-    -e ROS_MASTER_URI=http://sxlsk-210727aa:11311 \
     --name $CONTAINER_NAME \
     $DOCKER_NAME python /home/user/code/add_armod_tf.py                  
 
