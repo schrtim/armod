@@ -329,7 +329,7 @@ class CommandExecuterModule(ALModule):
         keys.append([-0.413643, -0.0610865, 0.29147, 0.115192, -0.413643, -0.0610865, 0.29147, -0.15708])
 
         # names.append("HeadYaw")
-        # times.append([0.52, 0.8, 1.08, 1.28, 1.48])
+        # timeand I would like to start working with the perception messages.s.append([0.52, 0.8, 1.08, 1.28, 1.48])
         # keys.append([0, 0, 0, 0, 0])
 
         try:
@@ -395,14 +395,14 @@ if __name__ == '__main__':
     # Test implementation
     if e.DEBUG:
         print("NAO will look somewhere ...")
-        e.CommandExecuter.updateCoordinates(2, 1, 3)
+        e.CommandExecuter.updateCoordinates(0.5, 1, 0.5)
         e.CommandExecuter.onCallLook()
         time.sleep(3)
         print("Bring NAO back to resting position ...")
         e.nao_head_rest()
 
         print("Let NAO point somewhere ...")
-        e.CommandExecuter.updateCoordinates(2, 1, 3)
+        e.CommandExecuter.updateCoordinates(0.5, 1, 0.5)
         e.CommandExecuter.onCallPoint()
         time.sleep(3)
         e.CommandExecuter.posture.goToPosture("Sit", 0.8)
