@@ -31,6 +31,8 @@ class ArmodCommand:
         # Get the transformation matrix
         (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(0))
         
+        self.trans = trans
+
         # Convert the rotation from quaternion to a 4x4 matrix
         rot_mat = quaternion_matrix(rot)
 
@@ -59,21 +61,22 @@ class ArmodCommand:
         head = data.header
         for human in data.humans:
             id = human.id
-            pose = human.centroid
+            pose = [human.centroid.x, human.centroid.y, human.centroid.z]
             twist = human.velocity
 
-            # Wait for the transform to be available
-            self.listener.waitForTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(), rospy.Duration(0))
+            # # Wait for the transform to be available
+            # self.listener.waitForTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(), rospy.Duration(0))
 
-            # Create a PoseStamped object from the pose and header
-            pose_stamped = PoseStamped()
-            pose_stamped.header = head
-            pose_stamped.pose = pose.pose
+            # # Create a PoseStamped object from the pose and header
+            # pose_stamped = PoseStamped()
+            # pose_stamped.header = head
+            # pose_stamped.pose = pose.pose
+            pose += self.trans
 
             # Transform the pose
-            pose_transformed = self.listener.transformPose("robot_armod_frame", pose_stamped)
+            # pose_transformed = self.listener.transformPose("robot_armod_frame", pose_stamped)
 
-            self.current_detections[id] = [head, pose_transformed, twist]
+            self.current_detections[id] = [head, pose, twist]
 
     def run(self):
         """Run the main loop of the node.
