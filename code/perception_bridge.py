@@ -6,6 +6,8 @@ import rospy
 from std_msgs.msg import String
 from darko_perception_msgs.msg import Humans
 from geometry_msgs.msg import PoseStamped
+from tf.transformations import quaternion_matrix
+import numpy as np
 
 class ArmodCommand:
     """A class that publishes commands to the Armod robot based on user input and perception data."""
@@ -22,6 +24,17 @@ class ArmodCommand:
         # Create a subscriber for the perception topics
         self.sub_keypress = rospy.Subscriber('/perception/humans', Humans, self.receive_perception_message) 
         self.listener = tf.TransformListener()
+        (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(0))
+        
+        # Convert the rotation from quaternion to a 4x4 matrix
+        rot_mat = quaternion_matrix(rot)
+
+        # Add the translation to the matrix
+        trans_mat = np.identity(4)
+        trans_mat[:3, 3] = trans
+
+        # Combine the rotation and translation into a single transformation matrix
+        self.TM = np.dot(trans_mat, rot_mat)
 
         self.current_detections = {}
 
@@ -42,7 +55,7 @@ class ArmodCommand:
             twist = human.velocity
 
             # Wait for the transform to be available
-            self.listener.waitForTransform("robot_k4a_top_rgb_camera_link", "robot_armod_frame", rospy.Time(), rospy.Duration(4.0))
+            self.listener.waitForTransform("robot_k4a_top_rgb_camera_link", "robot_armod_frame", rospy.Time(), rospy.Duration(0))
 
             # Create a PoseStamped object from the pose and header
             pose_stamped = PoseStamped()
@@ -70,6 +83,7 @@ class ArmodCommand:
             elif key == 'l': # if the user presses l
                 # Get the transformation matrix
                 (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(0))
+                print(self.TM)
 
                 # Print the translation and rotation
                 print("Translation:", trans)
