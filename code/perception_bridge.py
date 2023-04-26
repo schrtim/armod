@@ -24,7 +24,7 @@ class ArmodCommand:
         # Create a subscriber for the perception topics
         self.sub_keypress = rospy.Subscriber('/perception/humans', Humans, self.receive_perception_message) 
         self.listener = tf.TransformListener()
-        (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(0))
+        (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(4.0))
         
         # Convert the rotation from quaternion to a 4x4 matrix
         rot_mat = quaternion_matrix(rot)
