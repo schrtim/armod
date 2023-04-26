@@ -61,7 +61,7 @@ class ArmodCommand:
         head = data.header
         for human in data.humans:
             id = human.id
-            pose = human.centroid.pose
+            pose = human.centroid.pose.position
             twist = human.velocity
 
             # # Wait for the transform to be available
