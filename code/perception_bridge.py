@@ -42,7 +42,7 @@ class ArmodCommand:
             twist = human.velocity
 
             # Wait for the transform to be available
-            self.listener.waitForTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(), rospy.Duration(4.0))
+            self.listener.waitForTransform("robot_k4a_top_rgb_camera_link", "robot_armod_frame", rospy.Time(), rospy.Duration(4.0))
 
             # Create a PoseStamped object from the pose and header
             pose_stamped = PoseStamped()
