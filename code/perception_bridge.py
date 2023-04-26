@@ -3,6 +3,7 @@
 
 import rospy
 from std_msgs.msg import String
+from darko_perception_msgs.msg import Humans
 
 class ArmodCommand:
     """A class that publishes commands to the Armod robot based on user input and perception data."""
@@ -17,7 +18,7 @@ class ArmodCommand:
         self.pub = rospy.Publisher('armod_command', String, queue_size=10) 
 
         # Create a subscriber for the perception topics
-        self.sub_keypress = rospy.Subscriber('face_detections', String, self.receive_perception_message) 
+        self.sub_keypress = rospy.Subscriber('/perception/humans', Humans, self.receive_perception_message) 
 
         # Initialize an empty list for storing the perception data
         # Dictionary also possible if working with detection IDs
@@ -31,10 +32,11 @@ class ArmodCommand:
     def receive_perception_message(self, data):
         """Receive and process the perception data from the face_detections topic."""
 
-        # Split the data into x, y and z coordinates
-        bx, by, bz = data.data.split(",") 
-        # Convert the coordinates to floats and store them in the pd list
-        self.pd = [float(bx), float(by), float(bz)/1000] 
+        print(data)
+        # # Split the data into x, y and z coordinates
+        # bx, by, bz = data.data.split(",") 
+        # # Convert the coordinates to floats and store them in the pd list
+        # self.pd = [float(bx), float(by), float(bz)/1000] 
         
 
     def run(self):
