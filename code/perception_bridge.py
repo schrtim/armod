@@ -34,10 +34,12 @@ class ArmodCommand:
 
         self.current_detections = {}
 
+        head = data.header
         for human in data.humans:
             id = human.id
             pose = human.centroid
-            twist = human.velocity 
+            twist = human.velocity
+            self.current_detections[id] = [head, pose, twist]
 
     def run(self):
         """Run the main loop of the node.
@@ -50,6 +52,7 @@ class ArmodCommand:
             key = input("Press a key: ") # get user input from keyboard
             if key == 'p': # if the user presses p
                 self.send_command("point,"+str(self.pd[0])+","+str(self.pd[1])+","+str(self.pd[2])) # send a point command with the perception data
+                print(self.current_detections)
                 print(self.pd) # print the perception data
             elif key == 'l': # if the user presses l
                 self.send_command("look,"+str(self.pd[0])+","+str(self.pd[1])+","+str(self.pd[2])) # send a look command with the perception data
