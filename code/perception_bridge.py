@@ -61,7 +61,7 @@ class ArmodCommand:
         head = data.header
         for human in data.humans:
             id = human.id
-            pose = [human.centroid.x, human.centroid.y, human.centroid.z]
+            pose = human.centroid.pose
             twist = human.velocity
 
             # # Wait for the transform to be available
@@ -71,7 +71,7 @@ class ArmodCommand:
             # pose_stamped = PoseStamped()
             # pose_stamped.header = head
             # pose_stamped.pose = pose.pose
-            pose += self.trans
+            # pose += self.trans
 
             # Transform the pose
             # pose_transformed = self.listener.transformPose("robot_armod_frame", pose_stamped)
