@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import tf
 import rospy
 from std_msgs.msg import String
 from darko_perception_msgs.msg import Humans
@@ -19,10 +20,9 @@ class ArmodCommand:
 
         # Create a subscriber for the perception topics
         self.sub_keypress = rospy.Subscriber('/perception/humans', Humans, self.receive_perception_message) 
+        self.listener = tf.TransformListener()
 
-        # Initialize an empty list for storing the perception data
-        # Dictionary also possible if working with detection IDs
-        self.pd = [] 
+        self.current_detections = {}
 
     def send_command(self, command):
         """Publish a command to the armod_command topic as a string"""
@@ -39,7 +39,14 @@ class ArmodCommand:
             id = human.id
             pose = human.centroid
             twist = human.velocity
-            self.current_detections[id] = [head, pose, twist]
+
+            # Wait for the transform to be available
+            self.listener.waitForTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(), rospy.Duration(4.0))
+
+            # Transform the pose
+            pose_transformed = self.listener.transformPose("robot_armod_frame", pose)
+
+            self.current_detections[id] = [head, pose_transformed, twist]
 
     def run(self):
         """Run the main loop of the node.
