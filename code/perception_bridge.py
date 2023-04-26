@@ -78,12 +78,18 @@ class ArmodCommand:
             # Transform the pose
             # pose_transformed = self.listener.transformPose("robot_armod_frame", pose_stamped)
 
-            self.current_detections[id] = [head, pose, twist]
+            self.current_detections[id] = [head, pose]#, twist]
 
     def get_closest_human(self):
-        mi_abs = 10000
+        min_abs = 10000
+        min_key = 0
         for key, value in self.current_detections.items():
-            abs = np.linalg.norm(value)
+            abs = np.linalg.norm(value[1])
+            if abs < min_abs:
+                min_abs = abs
+                min_key = key
+        
+        return self.current_detections[min_key][1]
 
     def run(self):
         """Run the main loop of the node.
