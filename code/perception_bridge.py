@@ -31,7 +31,7 @@ class ArmodCommand:
         # Get the transformation matrix
         (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(0))
         
-        self.trans = trans
+        self.trans = np.array(trans)
 
         # Convert the rotation from quaternion to a 4x4 matrix
         rot_mat = quaternion_matrix(rot)
@@ -62,6 +62,7 @@ class ArmodCommand:
         for human in data.humans:
             id = human.id
             pose = human.centroid.pose.position
+            pose = np.array(pose.x, pose.y, pose.z)
             twist = human.velocity
 
             # # Wait for the transform to be available
@@ -72,7 +73,7 @@ class ArmodCommand:
             # pose_stamped.header = head
             # pose_stamped.pose = pose.pose
             pose += self.trans
-            pose += 0.5
+            pose[2] += 0.5
 
             # Transform the pose
             # pose_transformed = self.listener.transformPose("robot_armod_frame", pose_stamped)
@@ -82,8 +83,7 @@ class ArmodCommand:
     def get_closest_human(self):
         mi_abs = 10000
         for key, value in self.current_detections.items():
-            arry = np.array(value[1].x, value[1].y, value[1].z)
-            abs = np.linalg.norm(arry)
+            abs = np.linalg.norm(value)
 
     def run(self):
         """Run the main loop of the node.
