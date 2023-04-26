@@ -102,8 +102,8 @@ class ArmodCommand:
             key = input("Press a key: ") # get user input from keyboard
             if key == 'p': # if the user presses p
                 # self.send_command("point,"+str(self.pd[0])+","+str(self.pd[1])+","+str(self.pd[2])) # send a point command with the perception data
-                print(self.current_detections)
-                self.get_closest_human()
+                #print(self.current_detections)
+                print(self.get_closest_human())
                 # print(self.pd) # print the perception data
             elif key == 'l': # if the user presses l
                 # Get the transformation matrix
