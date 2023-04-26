@@ -79,6 +79,12 @@ class ArmodCommand:
 
             self.current_detections[id] = [head, pose, twist]
 
+    def get_closest_human(self):
+        mi_abs = 10000
+        for key, value in self.current_detections.items():
+            arry = np.array(value[1].x, value[1].y, value[1].z)
+            abs = np.linalg.norm(arry)
+
     def run(self):
         """Run the main loop of the node.
         
@@ -91,6 +97,7 @@ class ArmodCommand:
             if key == 'p': # if the user presses p
                 # self.send_command("point,"+str(self.pd[0])+","+str(self.pd[1])+","+str(self.pd[2])) # send a point command with the perception data
                 print(self.current_detections)
+                self.get_closest_human()
                 # print(self.pd) # print the perception data
             elif key == 'l': # if the user presses l
                 # Get the transformation matrix
