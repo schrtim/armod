@@ -68,8 +68,12 @@ class ArmodCommand:
                 print(self.current_detections)
                 # print(self.pd) # print the perception data
             elif key == 'l': # if the user presses l
-                # self.send_command("look,"+str(self.pd[0])+","+str(self.pd[1])+","+str(self.pd[2])) # send a look command with the perception data
-                # print(self.pd) # print the perception data
+                # Get the transformation matrix
+                (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(0))
+
+                # Print the translation and rotation
+                print("Translation:", trans)
+                print("Rotation:", rot)
                 pass
             elif key == 'q': # if the user presses q
                 # self.send_command("quit,"+str(0)+","+str(0)+","+str(0)) # send a quit command with zero coordinates
