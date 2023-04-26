@@ -62,7 +62,7 @@ class ArmodCommand:
         for human in data.humans:
             id = human.id
             pose = human.centroid.pose.position
-            pose = np.array(pose.x, pose.y, pose.z)
+            pose = np.array([pose.x, pose.y, pose.z])
             twist = human.velocity
 
             # # Wait for the transform to be available
