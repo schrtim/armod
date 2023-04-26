@@ -50,7 +50,7 @@ class ArmodCommand:
             pose_stamped.pose = pose.pose
 
             # Transform the pose
-            pose_transformed = self.listener.transformPose("robot_armod_frame", pose)
+            pose_transformed = self.listener.transformPose("robot_armod_frame", pose_stamped)
 
             self.current_detections[id] = [head, pose_transformed, twist]
 
