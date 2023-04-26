@@ -51,7 +51,10 @@ class ArmodCommand:
     def receive_perception_message(self, data):
         """Receive and process the perception data from the face_detections topic."""
 
-        self.current_detections = {}
+        # Count the number of items in the dictionary
+        num_items = len(self.current_detections)
+        if num_items > 1000:
+            self.current_detections = {}
 
         head = data.header
         for human in data.humans:
