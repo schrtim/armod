@@ -32,7 +32,9 @@ class ArmodCommand:
     def receive_perception_message(self, data):
         """Receive and process the perception data from the face_detections topic."""
 
-        print(data.centroid)        
+        print(data.humans)
+        print()    
+        print()  
 
     def run(self):
         """Run the main loop of the node.
