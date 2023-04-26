@@ -5,6 +5,7 @@ import tf
 import rospy
 from std_msgs.msg import String
 from darko_perception_msgs.msg import Humans
+from geometry_msgs.msg import PoseStamped
 
 class ArmodCommand:
     """A class that publishes commands to the Armod robot based on user input and perception data."""
@@ -42,6 +43,11 @@ class ArmodCommand:
 
             # Wait for the transform to be available
             self.listener.waitForTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(), rospy.Duration(4.0))
+
+            # Create a PoseStamped object from the pose and header
+            pose_stamped = PoseStamped()
+            pose_stamped.header = head
+            pose_stamped.pose = pose.pose
 
             # Transform the pose
             pose_transformed = self.listener.transformPose("robot_armod_frame", pose)
