@@ -100,29 +100,30 @@ class ArmodCommand:
 
         while not rospy.is_shutdown(): # loop until the node is shut down
             key = input("Press a key: ") # get user input from keyboard
-            cl = self.get_closest_human()
+            
             if key == 'p': # if the user presses p
                 # self.send_command("point,"+str(self.pd[0])+","+str(self.pd[1])+","+str(self.pd[2])) # send a point command with the perception data
                 #print(self.current_detections)
-
+                cl = self.get_closest_human()
                 self.send_command("point,"+str(cl[0])+","+str(cl[1])+","+str(cl[2])) # send a nod command with the perception data
                 
                 # print(self.pd) # print the perception data
             elif key == 'l': # if the user presses l
                 # Get the transformation matrix
-                (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(0))
-                print(self.TM)
+                # (trans, rot) = self.listener.lookupTransform("robot_armod_frame", "robot_k4a_top_rgb_camera_link", rospy.Time(0))
+                # print(self.TM)
 
-                # Print the translation and rotation
-                print("Translation:", trans)
-                print("Rotation:", rot)
-
+                # # Print the translation and rotation
+                # print("Translation:", trans)
+                # print("Rotation:", rot)
+                cl = self.get_closest_human()
                 self.send_command("look,"+str(cl[0])+","+str(cl[1])+","+str(cl[2])) # send a nod command with the perception data
                 pass
             elif key == 'q': # if the user presses q
                 # self.send_command("quit,"+str(0)+","+str(0)+","+str(0)) # send a quit command with zero coordinates
                 break # exit the loop
             elif key == 'n': # if the user presses n
+                cl = self.get_closest_human()
                 self.send_command("nod,"+str(cl[0])+","+str(cl[1])+","+str(cl[2])) # send a nod command with the perception data
             else: # if the user presses any other key
                 self.send_command(key) # send the key as a command
