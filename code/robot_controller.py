@@ -181,7 +181,7 @@ class CommandExecuterModule(ALModule):
             self.updateCoordinates(x, y, z)
             self.onCallLook()
             print(x,y,z)
-            time.sleep(5)
+            time.sleep(3)
             self.posture.applyPosture("Sit", 0.6)
         elif command == "quit":
             self.exit_flag = True
@@ -189,9 +189,9 @@ class CommandExecuterModule(ALModule):
             self.updateCoordinates(x, y, z)
             self.onCallLook()
             # Uncomment the following line to flash the robot's eyes green
-            # self.flash_eyes("green")
+            self.flash_eyes("green")
             self.onAffirmNod()
-            time.sleep(3)
+            time.sleep(2)
             self.posture.applyPosture("Sit", 0.6)
         else:
             print(data.data)            
