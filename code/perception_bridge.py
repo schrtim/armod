@@ -68,7 +68,7 @@ class ArmodCommand:
             # pose_stamped.header = head
             # pose_stamped.pose = pose.pose
             pose += self.trans
-            pose[2] += 0.5
+            pose[2] += (0.75*pose[2])
 
             # Transform the pose
             # pose_transformed = self.listener.transformPose("robot_armod_frame", pose_stamped)
