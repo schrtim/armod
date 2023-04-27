@@ -192,6 +192,7 @@ class CommandExecuterModule(ALModule):
             self.flash_eyes("green")
             self.onAffirmNod()
             time.sleep(2)
+            self.flash_eyes("white")
             self.posture.applyPosture("Sit", 0.6)
         else:
             print(data.data)            
@@ -259,7 +260,7 @@ class CommandExecuterModule(ALModule):
     def onCallLook(self):
         """Lets NAO look to a certain Position"""
 
-        valid = True #self.check_FOV_limits(np.array([self.x, self.y, self.z]))
+        valid = self.check_FOV_limits(np.array([self.x, self.y, self.z]))
         if valid:
             try:
                 self.tracker.lookAt([self.x, self.y, self.z], self.frame, self.maxSpeed, self.useWholeBody)
@@ -413,7 +414,10 @@ if __name__ == '__main__':
     try:
         # Keep running until the exit flag is set
         while not e.CommandExecuter.exit_flag:
-                pass
+                if e.CommandExecuter.exit_flag:
+                    break
+                else:
+                    pass
     except KeyboardInterrupt:
         e.myBroker.shutdown()
         sys.exit(0)
