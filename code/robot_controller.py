@@ -155,8 +155,8 @@ class CommandExecuterModule(ALModule):
         split = cmd.split(",")
         if len(split)>1:
             command = split[0]
-            x = -1*float(split[1]) # X-RealSense
-            y = -1*float(split[2]) # Y-RealSense
+            x = float(split[1]) # X-RealSense
+            y = float(split[2]) # Y-RealSense
             z = float(split[3])    # Z-RealSense
             return command, x, y, z
         else: return split[0], 0, 0, 0
