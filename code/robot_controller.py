@@ -178,6 +178,7 @@ class CommandExecuterModule(ALModule):
             self.posture.applyPosture("Sit", 0.6)
         elif command == "look":
             print("Let NAO look somewhere ...")
+            print(x,y,z)
             self.updateCoordinates(x, y, z)
             self.onCallLook()
             print(x,y,z)
