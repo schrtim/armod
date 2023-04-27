@@ -261,7 +261,7 @@ class CommandExecuterModule(ALModule):
     def onCallLook(self):
         """Lets NAO look to a certain Position"""
 
-        valid = self.check_FOV_limits(np.array([self.x, self.y, self.z]))
+        valid = True#self.check_FOV_limits(np.array([self.x, self.y, self.z]))
         if valid:
             try:
                 self.tracker.lookAt([self.x, self.y, self.z], self.frame, self.maxSpeed, self.useWholeBody)
