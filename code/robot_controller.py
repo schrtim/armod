@@ -178,7 +178,7 @@ class CommandExecuterModule(ALModule):
             self.posture.applyPosture("Sit", 0.6)
         elif command == "look":
             print("Let NAO look somewhere ...")
-            self.updateCoordinates(x, -y, z)
+            self.updateCoordinates(x, y, z)
             self.onCallLook()
             print(x,y,z)
             time.sleep(5)
@@ -186,7 +186,7 @@ class CommandExecuterModule(ALModule):
         elif command == "quit":
             self.exit_flag = True
         elif command == "nod":
-            self.updateCoordinates(x, -y, z)
+            self.updateCoordinates(x, y, z)
             self.onCallLook()
             # Uncomment the following line to flash the robot's eyes green
             # self.flash_eyes("green")
