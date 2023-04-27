@@ -100,13 +100,13 @@ class ArmodCommand:
 
         while not rospy.is_shutdown(): # loop until the node is shut down
             key = input("Press a key: ") # get user input from keyboard
+            cl = self.get_closest_human()
             if key == 'p': # if the user presses p
                 # self.send_command("point,"+str(self.pd[0])+","+str(self.pd[1])+","+str(self.pd[2])) # send a point command with the perception data
                 #print(self.current_detections)
-                cl = self.get_closest_human()
 
                 self.send_command("point,"+str(cl[0])+","+str(cl[1])+","+str(cl[2])) # send a nod command with the perception data
-
+                
                 # print(self.pd) # print the perception data
             elif key == 'l': # if the user presses l
                 # Get the transformation matrix
