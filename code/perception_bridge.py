@@ -53,11 +53,6 @@ class ArmodCommand:
     def receive_perception_message(self, data):
         """Receive and process the perception data from the face_detections topic."""
 
-        # Count the number of items in the dictionary
-        num_items = len(self.current_detections)
-        if num_items > 1000:
-            self.current_detections = {}
-
         head = data.header
         for human in data.humans:
             id = human.id
@@ -79,6 +74,11 @@ class ArmodCommand:
             # pose_transformed = self.listener.transformPose("robot_armod_frame", pose_stamped)
 
             self.current_detections[id] = [head, pose]#, twist]
+                # Count the number of items in the dictionary
+                
+        num_items = len(self.current_detections)
+        if num_items > 1000:
+            self.current_detections = {}
 
     def get_closest_human(self):
         min_abs = 10000
