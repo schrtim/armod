@@ -173,7 +173,7 @@ class CommandExecuterModule(ALModule):
         :param data: The data received from the ROS event.
         """
         command, x, y, z = self.command_split(data.data)
-        self.get_pose() # Read out IMU Data and publish it
+        self.get_pose(True) # Read out IMU Data and publish it
 
         if command == "point":
             print("Let NAO point somewhere ...")
