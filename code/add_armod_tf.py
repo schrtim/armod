@@ -12,11 +12,11 @@ class ArmodFrameClass:
         self.listener = tf.TransformListener()
         rospy.Subscriber("armod_orientation", String, self.callback)
         self.rate = rospy.Rate(90.0)
-        self.q = [0,0,0,1]
+        self.q = [0.,0.,0.,1.]
 
     def callback(self, data):
         msg = data.data.split(",")
-        self.q = [msg[1], msg[2], msg[3], msg[4]]
+        self.q = [float(msg[1]), float(msg[2]), float(msg[3]), float(msg[4])]
 
     def update_static_transform_broadcaster(self):
         while not rospy.is_shutdown():
