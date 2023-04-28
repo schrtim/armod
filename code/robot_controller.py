@@ -140,6 +140,7 @@ class CommandExecuterModule(ALModule):
         
         # Create a proxy for the ALMotion module
         self.motion = ALProxy("ALMotion")
+        self.localize = ALProxy("ALLocalization")
 
         
         # Wake up the robot
@@ -273,9 +274,9 @@ class CommandExecuterModule(ALModule):
             return
 
     def get_pose(self):
-        position = self.motion.getRobotPosition(True)
-        orientation = self.motion.getRobotOrientation(True)
-        print(position, orientation)
+        #position = self.motion.getRobotPosition(True)
+        orientation = self.localize.getRobotOrientation(True)
+        print("Orientation", orientation)
 
     def onCallPoint(self):
 
