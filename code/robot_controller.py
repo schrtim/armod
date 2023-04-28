@@ -116,7 +116,7 @@ class CommandExecuterModule(ALModule):
 
         global memory
         # Create a global memory proxy to access the robot's memory
-        memory = ALProxy("ALMemory")
+        self.memory = ALProxy("ALMemory")
 
         # Set the robot's posture to "Sit" with a speed of 0.8
         self.posture.goToPosture("Sit", 0.8)
@@ -139,8 +139,8 @@ class CommandExecuterModule(ALModule):
         # self.al.setState("disabled")
         
         # Create a proxy for the ALMotion module
-        self.motion = ALProxy("ALMotion")
-        self.localize = ALProxy("ALLocalization")
+        # self.motion = ALProxy("ALMotion")
+        # self.localize = ALProxy("ALLocalization")
 
         
         # Wake up the robot
@@ -275,8 +275,10 @@ class CommandExecuterModule(ALModule):
 
     def get_pose(self):
         #position = self.motion.getRobotPosition(True)
-        orientation = self.localize.getRobotOrientation(True)
-        print("Orientation", orientation)
+        ax = self.memory.getData("Device/SubDeviceList/InertialSensor/AngleX/Sensor/Value")
+        ay = self.memory.getData("Device/SubDeviceList/InertialSensor/AngleY/Sensor/Value")
+        az = self.memory.getData("Device/SubDeviceList/InertialSensor/AngleZ/Sensor/Value")
+        print("Orientation", (ax, ay, az))
 
     def onCallPoint(self):
 
