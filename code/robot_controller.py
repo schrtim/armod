@@ -29,6 +29,8 @@ from naoqi import ALProxy
 from naoqi import ALBroker
 from naoqi import ALModule
 
+import tf
+
 ## Read the configurables from the config file
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -171,6 +173,7 @@ class CommandExecuterModule(ALModule):
         :param data: The data received from the ROS event.
         """
         command, x, y, z = self.command_split(data.data)
+        self.get_pose() # Read out IMU Data and publish it
 
         if command == "point":
             print("Let NAO point somewhere ...")
@@ -200,7 +203,7 @@ class CommandExecuterModule(ALModule):
             self.posture.applyPosture("Sit", 0.6)
         else:
             print(data.data)      
-            self.get_pose()      
+            self.get_pose(verbose=True)      
  
     def detection_event(self, data):
         # TODO Implement during Integration week
@@ -274,7 +277,7 @@ class CommandExecuterModule(ALModule):
         else:
             return
 
-    def get_pose(self):
+    def get_pose(self, verbose=False):
         #position = self.motion.getRobotPosition(True)
         ax = self.memory.getData("Device/SubDeviceList/InertialSensor/AngleX/Sensor/Value")
         ay = self.memory.getData("Device/SubDeviceList/InertialSensor/AngleY/Sensor/Value")
@@ -282,9 +285,15 @@ class CommandExecuterModule(ALModule):
         ax = np.rad2deg(ax)
         ay = np.rad2deg(ay)
         az = np.rad2deg(az)
-        print("Orientation", (ax, ay, az))
-        orientation_string = "orientation,ax,ay,az"
-        self.pub(orientation_string)
+
+        q = tf.transformations.quaternion_from_euler(ax, ay, az)
+        orientation_string = "orientation,"+str(q[0])+","+str(q[1])+","+str(q[2])+","+str(q[3])
+
+        self.pub.publish(orientation_string)
+
+        if verbose:
+            print("Orientation Euler", (ax, ay, az))
+            print("Orientation Quaternion", q)
 
     def onCallPoint(self):
 
