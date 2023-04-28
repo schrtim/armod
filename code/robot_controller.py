@@ -139,7 +139,8 @@ class CommandExecuterModule(ALModule):
         # self.al.setState("disabled")
         
         # Create a proxy for the ALMotion module
-        # self.somnus = ALProxy("ALMotion")
+        self.motion = ALProxy("ALMotion")
+
         
         # Wake up the robot
         # self.somnus.wakeUp()       
@@ -196,7 +197,8 @@ class CommandExecuterModule(ALModule):
             self.flash_eyes("white")
             self.posture.applyPosture("Sit", 0.6)
         else:
-            print(data.data)            
+            print(data.data)      
+            self.get_pose()      
  
     def detection_event(self, data):
         # TODO Implement during Integration week
@@ -269,6 +271,11 @@ class CommandExecuterModule(ALModule):
                 print(excpt)
         else:
             return
+
+    def get_pose(self):
+        position = self.motion_proxy.getRobotPosition(True)
+        orientation = self.motion_proxy.getRobotOrientation(True)
+        print(position, orientation)
 
     def onCallPoint(self):
 
