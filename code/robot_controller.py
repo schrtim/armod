@@ -124,6 +124,7 @@ class CommandExecuterModule(ALModule):
         # ROS Publisher and subscriber:
         # Subscribe to the 'armod_command' topic to receive commands
         self.sub_keypress = rospy.Subscriber('armod_command', String, self.ros_event_callback)
+        self.pub = rospy.Publisher('armod_orientation', String, queue_size=10)
         
         # Initialize a ROS node with the name 'armod_controll'
         rospy.init_node('armod_controll', anonymous=True)
@@ -278,7 +279,12 @@ class CommandExecuterModule(ALModule):
         ax = self.memory.getData("Device/SubDeviceList/InertialSensor/AngleX/Sensor/Value")
         ay = self.memory.getData("Device/SubDeviceList/InertialSensor/AngleY/Sensor/Value")
         az = self.memory.getData("Device/SubDeviceList/InertialSensor/AngleZ/Sensor/Value")
+        ax = np.rad2deg(ax)
+        ay = np.rad2deg(ay)
+        az = np.rad2deg(az)
         print("Orientation", (ax, ay, az))
+        orientation_string = "orientation,ax,ay,az"
+        self.pub(orientation_string)
 
     def onCallPoint(self):
 
