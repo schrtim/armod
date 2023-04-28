@@ -13,7 +13,7 @@ def main():
         now = rospy.Time.now()
         br.sendTransform(
                 # Use this if X-Axis is aligned with robot_base_foorprint
-            (0.45, 0.0, 0.95),
+            (0.3, 0.0, 0.85),
             # Use remaped base_footprint as parent frame
             (0.00000000e+00,   0.00000000e+00,   0.00000000e+00,  1.0),
             now,
