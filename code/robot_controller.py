@@ -273,8 +273,8 @@ class CommandExecuterModule(ALModule):
             return
 
     def get_pose(self):
-        position = self.motion_proxy.getRobotPosition(True)
-        orientation = self.motion_proxy.getRobotOrientation(True)
+        position = self.motion.getRobotPosition(True)
+        orientation = self.motion.getRobotOrientation(True)
         print(position, orientation)
 
     def onCallPoint(self):
