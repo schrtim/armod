@@ -12,6 +12,7 @@ class ArmodFrameClass:
         self.listener = tf.TransformListener()
         rospy.Subscriber("armod_orientation", String, self.callback)
         self.rate = rospy.Rate(90.0)
+        self.q = [0,0,0,1]
 
     def callback(self, data):
         msg = data.data.split(",")
