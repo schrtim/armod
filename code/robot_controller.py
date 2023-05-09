@@ -59,6 +59,7 @@ class CommandExecuterModule(ALModule):
         global config
         # Change for head turning speed:
         self.maxSpeed = float(config['Timing']['NaoMaxSpeed'])
+        self.simulation = int(config['Experiment']['SimulatedNAO'])
 
         # Never use whole body for movement, as ARMoD is seating
         self.useWholeBody = False
@@ -111,24 +112,17 @@ class CommandExecuterModule(ALModule):
         self.led_controller = ALProxy("ALLeds")
 
          # Duration of LED flash in seconds (adjustable)
-        self.flash_duration = 2
-
-        # Delay between trials of an experiment
-        self.delay_between_trials = 1
+        self.flash_duration = 1
 
         global memory
         # Create a global memory proxy to access the robot's memory
         self.memory = ALProxy("ALMemory")
 
-        # Set the robot's posture to "Sit" with a speed of 0.8
-        self.posture.goToPosture("Sit", 0.8)
-
         # ROS Publisher and subscriber:
         # Subscribe to the 'armod_command' topic to receive commands
         self.sub_keypress = rospy.Subscriber('armod_command', String, self.ros_event_callback)
-        self.pub = rospy.Publisher('armod_orientation', String, queue_size=10)
-        
-        # Initialize a ROS node with the name 'armod_controll'
+
+        # Delay between trials of an experimentself.flash_duration
         rospy.init_node('armod_controll', anonymous=True)
 
         # Disable Autonomous Living: ROBOT WILL STAND UP!
@@ -142,10 +136,10 @@ class CommandExecuterModule(ALModule):
         # self.al.setState("disabled")
         
         # Create a proxy for the ALMotion module
-        # self.motion = ALProxy("ALMotion")
+        self.motion = ALProxy("ALMotion")
+        self.initRestPose()
         # self.localize = ALProxy("ALLocalization")
 
-        
         # Wake up the robot
         # self.somnus.wakeUp()       
 
@@ -173,41 +167,40 @@ class CommandExecuterModule(ALModule):
         :param data: The data received from the ROS event.
         """
         command, x, y, z = self.command_split(data.data)
-        self.get_pose(True) # Read out IMU Data and publish it
 
         if command == "point":
             print("Let NAO point somewhere ...")
             self.updateCoordinates(x, y, z)
             self.onCallPoint()
             print(x,y,z)
-            time.sleep(3)
-            self.posture.applyPosture("Sit", 0.6)
+            time.sleep(0.8)
+            self.onCallRest()
+
         elif command == "look":
             print("Let NAO look somewhere ...")
             print(x,y,z)
             self.updateCoordinates(x, y, z)
             self.onCallLook()
             print(x,y,z)
-            time.sleep(3)
-            self.posture.applyPosture("Sit", 0.6)
+            time.sleep(0.8)
+            self.onCallRest()
+
         elif command == "quit":
             self.exit_flag = True
+            
         elif command == "nod":
             self.updateCoordinates(x, y, z)
             self.onCallLook()
             # Uncomment the following line to flash the robot's eyes green
             self.flash_eyes("green")
             self.onAffirmNod()
-            time.sleep(2)
             self.flash_eyes("white")
-            self.posture.applyPosture("Sit", 0.6)
+            self.onCallRest()
+
         else:
-            print(data.data)      
-            self.get_pose(verbose=True)      
- 
-    def detection_event(self, data):
-        # TODO Implement during Integration week
-        pass
+            print(data.data)
+            if not self.simulation:      
+                self.get_pose(verbose=True)      
 
     def updateCoordinates(self, x, y, z):
         """
@@ -268,13 +261,14 @@ class CommandExecuterModule(ALModule):
     def onCallLook(self):
         """Lets NAO look to a certain Position"""
 
-        valid = True#self.check_FOV_limits(np.array([self.x, self.y, self.z]))
+        valid = self.check_FOV_limits(np.array([self.x, self.y, self.z]))
         if valid:
             try:
                 self.tracker.lookAt([self.x, self.y, self.z], self.frame, self.maxSpeed, self.useWholeBody)
             except Exception as excpt:
                 print(excpt)
         else:
+            print("Attempted non valid Gaze")
             return
 
     def get_pose(self, verbose=False):
@@ -328,10 +322,7 @@ class CommandExecuterModule(ALModule):
 
         sGroup = "FaceLeds"
 
-        if color == "blue":
-            duration = self.delay_between_trials
-        else:
-            duration = self.flash_duration
+        duration = self.flash_duration
         p = color
 
         self.ids = []
@@ -365,6 +356,64 @@ class CommandExecuterModule(ALModule):
             motion.angleInterpolation(names, keys, times, True)
         except BaseException as err:
             print(err)
+
+    def initRestPose(self):
+        """Code Snippet from Choregraphe
+            Lets NAO move back to its original posture
+            This posture can easily be defined using choregraphs timeline box
+            A defined posture there can be exported as bezier style python code
+        """
+        # Go back to initial Pose, to prevent unwanted behavior
+        # Choregraphe bezier export in Python.
+        self.rest_names = list()
+        self.rest_times = list()
+        self.rest_keys = list()
+        self.rest_names.append("HeadPitch")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[-0.0153821, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("HeadYaw")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[-0.021518, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("LElbowRoll")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[-1.20568, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("LElbowYaw")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[-0.490922, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("LHand")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[0.0104001, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("LShoulderPitch")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[0.918824, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("LShoulderRoll")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[0.28835, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("LWristYaw")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[0.0429101, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("RElbowRoll")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[1.29934, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("RElbowYaw")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[0.454022, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("RHand")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[0.0388, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("RShoulderPitch")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[0.91584, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("RShoulderRoll")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[-0.339056, [3, -0.4, 0], [3, 0, 0]]])
+        self.rest_names.append("RWristYaw")
+        self.rest_times.append([1.2])
+        self.rest_keys.append([[-0.044528, [3, -0.4, 0], [3, 0, 0]]])
+
+    def onCallRest(self):
+        self.motion.angleInterpolationBezier(self.rest_names, self.rest_times, self.rest_keys)
+
 
 # Main Function for NaoPosner Experiment
 class ArmodIntegrationClass():
@@ -440,10 +489,10 @@ if __name__ == '__main__':
     try:
         # Keep running until the exit flag is set
         while not e.CommandExecuter.exit_flag:
-                if e.CommandExecuter.exit_flag:
-                    break
-                else:
-                    pass
+            if e.CommandExecuter.exit_flag:
+                break
+            else:
+                pass
     except KeyboardInterrupt:
         e.myBroker.shutdown()
         sys.exit(0)
