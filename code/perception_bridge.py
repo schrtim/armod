@@ -151,7 +151,7 @@ class ArmodCommand:
         """Run the main loop of the node.
         
         React on perceptions/detections and send commands to NAO
-        TODO: Adapt to DARKO Perception Stack
+        TODO: Add Random Gazing Engine / Acknowledgement engine
         """
         while not rospy.is_shutdown(): # loop until the node is shut down
             try:
