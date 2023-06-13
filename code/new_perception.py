@@ -142,6 +142,7 @@ class ArmodPerception:
                                     time.sleep(2)
                             dt = 0
             dt += 1
+            rate.sleep()
 
 if __name__ == '__main__':
     armod = ArmodPerception() # create an instance of the ArmodCommand class
