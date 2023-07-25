@@ -337,8 +337,8 @@ class CommandExecuterModule(ALModule):
                     hand = "RHand"
                     
                 self.motion.openHand(hand)
-                self.tracker.pointAt("Arms", [self.x, self.y, self.z], self.frame, self.maxSpeed)
-                time.sleep(0.6)
+                self.tracker.pointAt(self.effector, [self.x, self.y, self.z], self.frame, self.maxSpeed)
+                time.sleep(0.4)
                 self.motion.closeHand(hand)
 
     def onCallSay(self, text):
