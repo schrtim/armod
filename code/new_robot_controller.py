@@ -335,7 +335,7 @@ class CommandExecuterModule(ALModule):
                 hands = ["LHand", "RHand"]
                 for hand in hands:
                     self.motion.openHand(hand, _async=True)
-                self.tracker.pointAt("Arms" [self.x, self.y, self.z], self.frame, self.maxSpeed)
+                self.tracker.pointAt("Arms", [self.x, self.y, self.z], self.frame, self.maxSpeed)
 
     def onCallSay(self, text):
         """
@@ -449,6 +449,9 @@ class CommandExecuterModule(ALModule):
 
     def onCallRest(self):
         self.motion.angleInterpolationBezier(self.rest_names, self.rest_times, self.rest_keys)
+        hands = ["LHand", "RHand"]
+        for hand in hands:
+            self.motion.closeHand(hand, _async=True)
 
 
 # Main Function for NaoPosner Experiment
