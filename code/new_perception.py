@@ -130,9 +130,12 @@ class ArmodPerception:
                             #         time.sleep(2)
 
                             # print(f"Will warn id: {self.closest_id} at time: {datetime.now()} (was already acknowledged)")
-                            self.pub.publish("WRN,"+self.get_coordinates())
-                            self.detected_humans[self.closest_id]["WRN"] = True
-                            time.sleep(0.5)                            
+
+                            # self.pub.publish("WRN,"+self.get_coordinates())
+                            # self.detected_humans[self.closest_id]["WRN"] = True
+                            # time.sleep(0.5)
+                            pass
+
                             dt = 0
 
                     # Person is in legitimate distance
