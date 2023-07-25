@@ -62,7 +62,7 @@ class ArmodPerception:
             if data.id:
                 print(f"SMU {data.id} id Glitch at: {datetime.now()}")
             else:
-                # print(f"No detections at: {datetime.now()}")
+                print(f"No detections at: {datetime.now()}")
                 self.people_detections = False
             return
         # print(f"Closest id: {data.id}, {type(data.id)}")
