@@ -27,7 +27,6 @@ class ArmodPerception:
         self.sub_smu_marker = rospy.Subscriber('/smu/closest_human_visualization_marker', Marker, self.smu_callback)
 
         self.detected_humans = {}
-        self.people_detections = False
 
         self.nao_base_offset = [0.3, 0, 0.8]
         self.id_stamp = datetime.now()
@@ -59,15 +58,10 @@ class ArmodPerception:
         try:
             _ = self.detected_humans[data.id]["AKN"]
         except KeyError:
-            if data.id:
-                print(f"SMU {data.id} id Glitch at: {datetime.now()}")
-            else:
-                print(f"No detections at: {datetime.now()}")
-                self.people_detections = False
+            print(f"SMU {data.id} id Glitch at: {datetime.now()}")
             return
         # print(f"Closest id: {data.id}, {type(data.id)}")
         self.closest_id = data.id
-        self.people_detections = True
         self.id_stamp = datetime.now()
 
         self.detected_humans[self.closest_id]["X"] = data.pose.position.x
@@ -95,74 +89,62 @@ class ArmodPerception:
 
             # If any detection within the last two seconds
             if age < 3:
-                # If 2 seconds passed since last event
+                # If 2 seconds passed
                 if dt >= 20:
                     if self.status == "Warn":
-                        # Human is too close,  was not acknowledged and not warned yet
                         if not self.detected_humans[self.closest_id]["WRN"] and not self.detected_humans[self.closest_id]["AKN"]:
-                            # print(f"Will warn id: {self.closest_id} at time: {datetime.now()}")
-                            # print(f"Will also acknowledge id: {self.closest_id} at time: {datetime.now()}")
+                            print(f"Will warn id: {self.closest_id} at time: {datetime.now()}")
+                            print(f"Will also acknowledge id: {self.closest_id} at time: {datetime.now()}")
                             self.pub.publish("AKN+WRN,"+self.get_coordinates())
                             self.detected_humans[self.closest_id]["WRN"] = True
                             self.detected_humans[self.closest_id]["AKN"] = True
                             time.sleep(2)
                             dt = 0
 
-                        # Human is too close,  was already acknowledged but not warned
                         elif not self.detected_humans[self.closest_id]["WRN"] and self.detected_humans[self.closest_id]["AKN"]:
-                            # print(f"Will only warn id: {self.closest_id} at time: {datetime.now()} (was already acknowledged)")
+                            print(f"Will only warn id: {self.closest_id} at time: {datetime.now()} (was already acknowledged)")
+
 
                             self.pub.publish("WRN,"+self.get_coordinates())
                             self.detected_humans[self.closest_id]["WRN"] = True
                             time.sleep(2)
                             dt = 0
 
-                        # Human is too close, but was already warned and acknowledged
                         elif self.detected_humans[self.closest_id]["WRN"] and self.detected_humans[self.closest_id]["AKN"]:
-                            # chance = np.random.randint(1,5) # Implemetning a percentage change
-                            # if chance != 4: # So 75% Chance of gazing at a random point
-                            #     gaze_age = (datetime.now()-self.detected_humans[self.closest_id]["gtsamp"]).seconds
-                            #     if gaze_age > 5:
-                            #         print(f"Will only look at id: {self.closest_id} at time: {datetime.now()} (AKN and WRN are True)")
-                            #         self.pub.publish("Look,"+self.get_coordinates())
+                            chance = np.random.randint(1,5) # Implemetning a percentage change
+                            if chance != 4: # So 75% Chance of gazing at a random point
+                                gaze_age = (datetime.now()-self.detected_humans[self.closest_id]["gtsamp"]).seconds
+                                if gaze_age > 5:
+                                    print(f"Will only look at id: {self.closest_id} at time: {datetime.now()} (AKN and WRN are True)")
+                                    self.pub.publish("Look,"+self.get_coordinates())
 
-                            #         self.detected_humans[self.closest_id]["gstamp"] = datetime.now()                               
-                            #         time.sleep(2)
-
-                            #### Logic needed, else overshooting here!
-
-                            pass
-
+                                    self.detected_humans[self.closest_id]["gstamp"] = datetime.now()                               
+                                    time.sleep(2)
                             dt = 0
 
-                    # Person is in legitimate distance
                     if self.status == "Ok":
                         if not self.detected_humans[self.closest_id]["AKN"]:
-                            # print(f"Will acknowledge id: {self.closest_id} at time: {datetime.now()}")
+                            print(f"Will acknowledge id: {self.closest_id} at time: {datetime.now()}")
                             self.pub.publish("AKN,"+self.get_coordinates())
                             self.detected_humans[self.closest_id]["AKN"] = True
                             time.sleep(2)
                             dt = 0
 
                         else:
-                            # chance = np.random.randint(1,5)
-                            # if chance%2 == 0:
-                            #     gaze_age = (datetime.now()-self.detected_humans[self.closest_id]["gtsamp"]).seconds
-                            #     if gaze_age > 5:
-                            #         # print(f"Will only look at id: {self.closest_id} at time: {datetime.now()} (was already acknowledged and warned)")
-                            #         self.pub.publish("Look,"+self.get_coordinates())
+                            chance = np.random.randint(1,5)
+                            if chance%2 == 0:
+                                gaze_age = (datetime.now()-self.detected_humans[self.closest_id]["gtsamp"]).seconds
+                                if gaze_age > 5:
+                                    print(f"Will only look at id: {self.closest_id} at time: {datetime.now()} (was already acknowledged and warned)")
+                                    self.pub.publish("Look,"+self.get_coordinates())
 
-                            #         self.detected_humans[self.closest_id]["gstamp"] = datetime.now()
-                            #         time.sleep(2)
-                            # dt = 0
-                            if self.people_detections:
-                                self.pub.publish("Look,"+self.get_coordinates())
-                                # self.detected_humans[self.closest_id]["gstamp"] = datetime.now()
-                                time.sleep(1)
+                                    self.detected_humans[self.closest_id]["gstamp"] = datetime.now()
+                                    time.sleep(2)
+                            dt = 0
             dt += 1
             rate.sleep()
 
 if __name__ == '__main__':
     armod = ArmodPerception() # create an instance of the ArmodCommand class
-    armod.run_perception() # run the main loop of the node                       
+    armod.run_perception() # run the main loop of the node                 
 
