@@ -157,7 +157,8 @@ class ArmodPerception:
                             # dt = 0
                             if self.people_detections:
                                 self.pub.publish("Look,"+self.get_coordinates())
-                                self.detected_humans[self.closest_id]["gstamp"] = datetime.now()
+                                # self.detected_humans[self.closest_id]["gstamp"] = datetime.now()
+                                time.sleep(1)
             dt += 1
             rate.sleep()
 
