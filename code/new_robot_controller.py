@@ -178,23 +178,26 @@ class CommandExecuterModule(ALModule):
             self.onCallLook()
             self.flash_eyes("red")
             self.onCallSay("\\rspd=80\\ \\vol=100\\Be Carefull you are too close!")
-            self.flash_eyes("white")
+            self.onCallPoint("warn")
             # print(x,y,z)
-            time.sleep(0.8)
+            time.sleep(0.6)
             self.onCallRest()
+            self.flash_eyes("white")
 
         elif command == "AKN+WRN":
             self.updateCoordinates(x, y, z)
 
             self.onCallLook()
-            self.flash_eyes("green")
-            self.onCallSay("\\rspd=80\\Hello I can see you")
-            # Uncomment the following line to flash the robot's eyes green
-            self.onAffirmNod()
-            
             self.flash_eyes("red")
             self.onCallSay("\\rspd=80\\ \\vol=100\\Pay Attention!")
             self.flash_eyes("white")
+
+            self.onCallLook()
+            self.flash_eyes("green")
+            self.onCallSay("\\rspd=80\\I have seen you")
+            # Uncomment the following line to flash the robot's eyes green
+            self.onAffirmNod()
+            
             # print(x,y,z)
             time.sleep(0.8)
             self.onCallRest()
@@ -204,7 +207,7 @@ class CommandExecuterModule(ALModule):
             
         elif command == "AKN":
             self.updateCoordinates(x, y, z)
-            
+
             self.onCallLook()
             self.flash_eyes("green")
             self.onCallSay("\\rspd=80\\Hello I can see you")
@@ -314,17 +317,25 @@ class CommandExecuterModule(ALModule):
             print("Orientation Euler", (ax, ay, az))
             print("Orientation Quaternion", q)
 
-    def onCallPoint(self):
+    def onCallPoint(self, gesture=None):
 
     # TODO add decision mechanic for arm to point with
-        if self.y > 0:
-            self.effector = "LArm"
+
+        if gesture is None:
+            if self.y > 0:
+                self.effector = "LArm"
+            else:
+                self.effector = "RArm"
+            try:
+                self.tracker.pointAt(self.effector, [self.x, self.y, self.z], self.frame, self.maxSpeed)
+            except Exception as excpt:
+                print(excpt)
         else:
-            self.effector = "RArm"
-        try:
-            self.tracker.pointAt(self.effector, [self.x, self.y, self.z], self.frame, self.maxSpeed)
-        except Exception as excpt:
-            print(excpt)       
+            if gesture == "warn":
+                hands = ["LHand", "RHand"]
+                for hand in hands:
+                    self.motion.openHand(hand, _async=True)
+                self.tracker.pointAt("Arms" [self.x, self.y, self.z], self.frame, self.maxSpeed)
 
     def onCallSay(self, text):
         """
