@@ -175,9 +175,9 @@ class CommandExecuterModule(ALModule):
             # print("Let NAO point somewhere ...")
 
             self.updateCoordinates(x, y, z)
+            self.onCallLook()
             self.flash_eyes("red")
             self.onCallSay("\\rspd=80\\ \\vol=100\\Be Carefull you are too close!")
-            self.onCallLook()
             self.flash_eyes("white")
             # print(x,y,z)
             time.sleep(0.8)
@@ -186,9 +186,9 @@ class CommandExecuterModule(ALModule):
         elif command == "AKN+WRN":
             self.updateCoordinates(x, y, z)
 
-            self.onCallSay("\\rspd=80\\Hello I can see you")
-            self.flash_eyes("green")
             self.onCallLook()
+            self.flash_eyes("green")
+            self.onCallSay("\\rspd=80\\Hello I can see you")
             # Uncomment the following line to flash the robot's eyes green
             self.onAffirmNod()
             
@@ -204,11 +204,13 @@ class CommandExecuterModule(ALModule):
             
         elif command == "AKN":
             self.updateCoordinates(x, y, z)
+            
+            self.onCallLook()
             self.flash_eyes("green")
             self.onCallSay("\\rspd=80\\Hello I can see you")
-            self.onCallLook()
             # Uncomment the following line to flash the robot's eyes green
             self.onAffirmNod()
+
             self.flash_eyes("white")
             self.onCallRest()
 
