@@ -196,9 +196,10 @@ class CommandExecuterModule(ALModule):
             self.onCallSay("\\rspd=80\\I have seen you")
             # Uncomment the following line to flash the robot's eyes green
             self.onAffirmNod()
+            self.flash_eyes("white")
             
             # print(x,y,z)
-            time.sleep(0.8)
+            time.sleep(0.6)
             self.onCallRest()
 
         elif command == "quit":
