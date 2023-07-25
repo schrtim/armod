@@ -180,7 +180,6 @@ class CommandExecuterModule(ALModule):
             self.onCallSay("\\rspd=80\\ \\vol=100\\Be Carefull you are too close!")
             self.onCallPoint("warn")
             # print(x,y,z)
-            time.sleep(0.6)
             self.onCallRest()
             self.flash_eyes("white")
 
@@ -332,10 +331,15 @@ class CommandExecuterModule(ALModule):
                 print(excpt)
         else:
             if gesture == "warn":
-                hands = ["LHand", "RHand"]
-                for hand in hands:
-                    self.motion.openHand(hand, _async=True)
+                if self.effector == "LArm":
+                    hand = "LHand"
+                if self.effector == "RArm":
+                    hand = "RHand"
+                    
+                self.motion.openHand(hand)
                 self.tracker.pointAt("Arms", [self.x, self.y, self.z], self.frame, self.maxSpeed)
+                time.sleep(0.6)
+                self.motion.closeHand(hand)
 
     def onCallSay(self, text):
         """
@@ -449,9 +453,6 @@ class CommandExecuterModule(ALModule):
 
     def onCallRest(self):
         self.motion.angleInterpolationBezier(self.rest_names, self.rest_times, self.rest_keys)
-        hands = ["LHand", "RHand"]
-        for hand in hands:
-            self.motion.closeHand(hand, _async=True)
 
 
 # Main Function for NaoPosner Experiment
