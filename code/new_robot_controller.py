@@ -176,9 +176,10 @@ class CommandExecuterModule(ALModule):
 
             self.updateCoordinates(x, y, z)
             self.onCallLook()
-            self.flash_eyes("red")
-            self.onCallSay("\\rspd=80\\ \\vol=100\\Be Carefull you are too close!")
             self.onCallPoint("warn")
+            self.flash_eyes("red")
+            self.onCallSay("\\rspd=100\\ \\vol=100\\Carefull you are too close!")
+            
             # print(x,y,z)
             self.onCallRest()
             self.flash_eyes("white")
