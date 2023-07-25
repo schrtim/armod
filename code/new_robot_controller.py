@@ -175,11 +175,11 @@ class CommandExecuterModule(ALModule):
             # print("Let NAO point somewhere ...")
 
             self.updateCoordinates(x, y, z)
-            self.flash_eyes("red")
-            self.onCallLook()
-            self.onCallPoint("warn")
             
+            self.onCallLook()
+            self.flash_eyes("red")
             self.onCallSay("\\rspd=100\\ \\vol=100\\Carefull you are too close!")
+            self.onCallPoint("warn")
             
             # print(x,y,z)
             self.onCallRest()
