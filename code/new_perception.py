@@ -112,7 +112,11 @@ class ArmodPerception:
 
                         elif self.detected_humans[self.closest_id]["WRN"] and self.detected_humans[self.closest_id]["AKN"]:
                             chance = np.random.randint(1,5) # Implemetning a percentage change
+<<<<<<< HEAD
                             if chance != 4: # So 75% Chance of gazing
+=======
+                            if chance != 4: # So 75% Chance of gazing at a random point
+>>>>>>> d1f06d4ffbaaf850a9d7360a0abe5966713135a2
                                 gaze_age = (datetime.now()-self.detected_humans[self.closest_id]["gtsamp"]).seconds
                                 if gaze_age > 5:
                                     print(f"Will only look at id: {self.closest_id} at time: {datetime.now()} (AKN and WRN are True)")
@@ -146,5 +150,5 @@ class ArmodPerception:
 
 if __name__ == '__main__':
     armod = ArmodPerception() # create an instance of the ArmodCommand class
-    armod.run_perception() # run the main loop of the node                       
+    armod.run_perception() # run the main loop of the node                 
 

@@ -175,28 +175,32 @@ class CommandExecuterModule(ALModule):
             # print("Let NAO point somewhere ...")
 
             self.updateCoordinates(x, y, z)
-            self.flash_eyes("red")
-            self.onCallSay("\\rspd=80\\ \\vol=100\\Be Carefull you are too close!")
+            
             self.onCallLook()
-            self.flash_eyes("white")
+            self.flash_eyes("red")
+            self.onCallSay("\\rspd=100\\ \\vol=100\\Carefull you are too close!")
+            self.onCallPoint("warn")
+            
             # print(x,y,z)
-            time.sleep(0.8)
             self.onCallRest()
+            self.flash_eyes("white")
 
         elif command == "AKN+WRN":
             self.updateCoordinates(x, y, z)
-
-            self.onCallSay("\\rspd=80\\Hello I can see you")
-            self.flash_eyes("green")
-            self.onCallLook()
-            # Uncomment the following line to flash the robot's eyes green
-            self.onAffirmNod()
-            
             self.flash_eyes("red")
+            self.onCallLook()
             self.onCallSay("\\rspd=80\\ \\vol=100\\Pay Attention!")
             self.flash_eyes("white")
+
+            self.flash_eyes("green")
+            self.onCallLook()
+            self.onCallSay("\\rspd=80\\I have seen you")
+            # Uncomment the following line to flash the robot's eyes green
+            self.onAffirmNod()
+            self.flash_eyes("white")
+            
             # print(x,y,z)
-            time.sleep(0.8)
+            time.sleep(0.6)
             self.onCallRest()
 
         elif command == "quit":
@@ -204,11 +208,13 @@ class CommandExecuterModule(ALModule):
             
         elif command == "AKN":
             self.updateCoordinates(x, y, z)
+
             self.flash_eyes("green")
-            self.onCallSay("\\rspd=80\\Hello I can see you")
             self.onCallLook()
+            self.onCallSay("\\rspd=80\\Hello I can see you")
             # Uncomment the following line to flash the robot's eyes green
             self.onAffirmNod()
+
             self.flash_eyes("white")
             self.onCallRest()
 
@@ -312,17 +318,30 @@ class CommandExecuterModule(ALModule):
             print("Orientation Euler", (ax, ay, az))
             print("Orientation Quaternion", q)
 
-    def onCallPoint(self):
+    def onCallPoint(self, gesture=None):
 
     # TODO add decision mechanic for arm to point with
-        if self.y > 0:
-            self.effector = "LArm"
+
+        if gesture is None:
+            if self.y > 0:
+                self.effector = "LArm"
+            else:
+                self.effector = "RArm"
+            try:
+                self.tracker.pointAt(self.effector, [self.x, self.y, self.z], self.frame, self.maxSpeed)
+            except Exception as excpt:
+                print(excpt)
         else:
-            self.effector = "RArm"
-        try:
-            self.tracker.pointAt(self.effector, [self.x, self.y, self.z], self.frame, self.maxSpeed)
-        except Exception as excpt:
-            print(excpt)       
+            if gesture == "warn":
+                if self.effector == "LArm":
+                    hand = "LHand"
+                if self.effector == "RArm":
+                    hand = "RHand"
+                    
+                self.motion.openHand(hand)
+                self.tracker.pointAt(self.effector, [self.x, self.y, self.z], self.frame, self.maxSpeed)
+                time.sleep(0.4)
+                self.motion.closeHand(hand)
 
     def onCallSay(self, text):
         """
